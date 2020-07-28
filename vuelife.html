@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <h3>单组件</h3>
+      <button @click="dataVar += 1">更新 {{dataVar}}</button>
+      <button @click="handleDestroy">销毁</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+      new Vue({
+        el: "#app",
+        data() {
+          return {
+            dataVar: 1,
+          };
+        },
+        beforeCreate() {
+          this.compName = "single";
+          console.log(`--${this.compName}--beforeCreate`);
+        },
+        created() {
+          console.log(`--${this.compName}--created`);
+        },
+        beforeMount() {
+          console.log(`--${this.compName}--beforeMount`);
+        },
+        mounted() {
+          console.log(`--${this.compName}--mounted`);
+          console.log(`'this.$el'--${this.$el}--mounted`);
+          console.log(this.$el);
+        },
+        beforeUpdate() {
+          console.log(`--${this.compName}--beforeUpdate`);
+        },
+        updated() {
+          console.log(`--${this.compName}--updated`);
+        },
+        beforeDestroy() {
+          console.log(`--${this.compName}--beforeDestroy`);
+        },
+        destroyed() {
+          console.log(`--${this.compName}--destroyed`);
+        },
+        methods: {
+          handleDestroy() {
+            this.$destroy();
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="formdiv">
+      <input type="text" placeholder="请输入姓名" v-model="message" />
+      <p>Message is: {{ message }}</p>
+      <input type="text" placeholder="请输入年龄" v-model="formData1.name" />
+    </form>
+  </body>
+  <script src="./main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    //window.location = "#green"; //或者手动更改浏览器地址栏中的url
+    window.onhashchange = function (event) {
+      console.log("event.oldURL", event.oldURL);
+      console.log("event.newURL", event.newURL);
+
+      let hash = location.hash.slice(1);
+
+      document.body.style.color = hash;
+    };
+    //////////////////////////////////////////
+    console.log("pushState前》history:", history);
+    console.log(
+      "pushState前》window.location.pathname:",
+      window.location.pathname
+    );
+    history.pushState({ color: "red" }, "red", "red");
+    //history.replaceState({ color: "blue" }, "blue", "/blue");
+
+    //history.pushState(null, null, window.location.pathname + "/red");
+    // history.pushState(
+    //   { color: "red" },
+    //   "red",
+    //   window.location.pathname + "/red"
+    // );
+
+    // history.replaceState(
+    //   null,
+    //   null,
+    //   window.location.pathname + "/red"
+    // );
+
+    window.onpopstate = function (event) {
+      console.log("event.state:", event.state);
+
+      if (event.state && event.state.color === "red") {
+        document.body.style.color = "red";
+      } else if (event.state && event.state.color === "blue") {
+        document.body.style.color = "blue";
+      } else {
+        document.body.style.color = "pink";
+      }
+    };
+    console.log("pushState后》history:", history);
+    console.log(
+      "pushState后》window.location.pathname:",
+      window.location.pathname
+    );
+    // history.back();
+    // console.log("history.back后》history:", history);
+    // console.log(
+    //   "history.back后》window.location.pathname:",
+    //   window.location.pathname
+    // );
+
+    // history.forward();
+    // console.log("history.forward后》history:", history);
+    // console.log(
+    //   "history.forward后》window.location.pathname:",
+    //   window.location.pathname
+    // );
+    /////////////////////////////////
+
+    var app1 = new Vue({
+      el: "#formdiv",
+      data() {
+        return {
+          message: "",
+          formData1: {
+            name: "",
+            age: 0,
+          },
+          formData: "",
+          testWatch: "testWatch",
+        };
+      },
+      watch: {
+        testWatch() {
+          console.log("watch监听testWatch,testWatch:", this.testWatch);
+        },
+        formData1() {
+          console.log("watch监听formData1,formData1:", this.formData1);
+        },
+        message() {
+          console.log("watch监听message,message:", this.message);
+        },
+      },
+      created() {
+        this.$_loadData();
+      },
+      methods: {
+        $_loadData() {
+          setTimeout(() => {
+            // 先赋值
+            // this.formData = {
+            //   name: "子君",
+            //   age: 18,
+            // };
+            this.formData = "111";
+            //this.testWatch = "testWatch1";
+            console.log("第一层setTime");
+            // 等表单数据回填之后，监听数据是否发生变化
+            const unwatch = this.$watch(
+              "formData",
+              (newVal, oldVal) => {
+                console.log("数据发生了变化,newVal:", newVal);
+                console.log("数据发生了变化,oldVal:", oldVal);
+              },
+              {
+                deep: true,
+              }
+            ); //unwatch可以取消监听
+            // 模拟数据发生了变化
+            setTimeout(() => {
+              //this.formData.name = "张三";
+              this.formData = "222";
+              this.testWatch = "testWatch2";
+              console.log("第二层setTime");
+            }, 1000);
+          }, 1000);
+        },
+      },
+    });
+  </script>
+</html>
