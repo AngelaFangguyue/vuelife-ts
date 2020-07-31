@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <button v-on:click="hide">{{ message }}</button>
+      <my v-if="show"></my>
+      <my v-if="show"></my>
+      <my v-if="show"></my>
+      <button v-on:click="print">触发总线事件</button>
+      <button v-on:click="printBus">打印事件总线</button>
+      <button v-on:click="printApp">打印app实例</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript">
+      let bus = new Vue();
+      Vue.component("my", {
+        data() {
+          return {
+            nowIndex: 1,
+          };
+        },
+        template: `
+                <div>
+                    组件操作数：{{ nowIndex }} </br>
+                    <button v-on:click="add">添加</button><button v-on:click="selfDestroy">调用组件destroy函数</button>
+                </div>
+            `,
+        mounted() {
+          bus.$on("eventone", (value) => {
+            console.log("id: ", this._uid, " 's nowIndex is", this.nowIndex);
+          });
+        },
+        destroyed() {
+          console.log("hello destroyed");
+        },
+        methods: {
+          selfDestroy() {
+            //this.$off("click", this.add);
+            this.$destroy();
+          },
+          add() {
+            console.log("1:", this.nowIndex);
+            this.nowIndex += 1;
+            //nowIndex ++
+            console.log("2:", this.nowIndex);
+          },
+        },
+      });
+      let app = new Vue({
+        el: "#app",
+        data: {
+          message: "隐藏",
+          show: true,
+        },
+        methods: {
+          hide() {
+            this.show = !this.show;
+            if (this.show) {
+              this.message = "隐藏";
+            } else {
+              this.message = "显示";
+            }
+          },
+          print() {
+            bus.$emit("eventone");
+          },
+          printBus() {
+            console.log(bus);
+          },
+          printApp() {
+            console.log(this);
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

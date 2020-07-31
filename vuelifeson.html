@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <div class="complex">
+        <h3 @click="add">
+          复杂组件--{{parData}}<button @click="handleDestroy">
+            父组件销毁
+          </button>
+        </h3>
+        <lifecycle-single compname="child"></lifecycle-single>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+      const COMPONENT_NAME = "complex";
+      Vue.component("LifecycleSingle", {
+        data() {
+          return { sonData: 1 };
+        },
+        props: {
+          compname: {
+            type: String,
+            default: "single",
+          },
+        },
+        template: `
+                            <div @click="add">
+                           11111--{{sonData}}--<button @click="handleDestroy">销毁</button>
+                            </div>
+                    `,
+        beforeCreate() {
+          console.log(` --data未初始化--beforeCreate`);
+          // this.compname = "single";
+          //console.log(`--${this.compname}--beforeCreate`);//这句话会报错
+        },
+        created() {
+          console.log(`--${this.compname}--created`);
+        },
+        beforeMount() {
+          console.log(`--${this.compname}--beforeMount`);
+        },
+        mounted() {
+          console.log(`--${this.compname}--mounted`);
+        },
+        beforeUpdate() {
+          console.log(`--${this.compname}--beforeUpdate`);
+        },
+        updated() {
+          console.log(`--${this.compname}--updated`);
+        },
+        beforeDestroy() {
+          console.log(`--${this.compname}--beforeDestroy`);
+        },
+        destroyed() {
+          console.log(`--${this.compname}--destroyed`);
+        },
+        methods: {
+          add() {
+            this.sonData += 1;
+            console.log("this.$nextTick之前的this.sonData:", this.sonData);
+          },
+          handleDestroy() {
+            this.$destroy();
+          },
+        },
+      });
+
+      new Vue({
+        el: "#app",
+        data() {
+          return { parData: 10 };
+        },
+        beforeCreate() {
+          console.log(`--${COMPONENT_NAME}--beforeCreate`);
+        },
+        created() {
+          console.log(`--${COMPONENT_NAME}--created`);
+        },
+        beforeMount() {
+          console.log(`--${COMPONENT_NAME}--beforeMount`);
+        },
+        mounted() {
+          console.log(`--${COMPONENT_NAME}--mounted`);
+        },
+        beforeUpdate() {
+          console.log(`--${COMPONENT_NAME}--beforeUpdate`);
+        },
+        updated() {
+          console.log(`--${COMPONENT_NAME}--updated`);
+        },
+        beforeDestroy() {
+          console.log(`--${COMPONENT_NAME}--beforeDestroy`);
+        },
+        destroyed() {
+          console.log(`--${COMPONENT_NAME}--destroyed`);
+        },
+        methods: {
+          add() {
+            this.parData += 10;
+            console.log("this.$nextTick之前的this.parData:", this.parData);
+          },
+          handleDestroy() {
+            this.$destroy();
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

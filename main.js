@@ -405,10 +405,13 @@ Db1.add(u);
 
 
 */
-/*1：类装饰器 */
+/*1.1：类装饰器>普通装饰器 */
 function dec(params) {
     //params其实就是当前类
     params.prototype.dec1 = "dec1";
+    params.prototype.run = function () {
+        console.log("在类装饰中添加一个run方法");
+    };
 }
 var Lei = /** @class */ (function () {
     function Lei() {
@@ -423,3 +426,142 @@ var Lei = /** @class */ (function () {
 }());
 var lei1 = new Lei(); //这个地方需要给lei1声明一下类型，
 console.log(lei1.dec1);
+/*1.2：类装饰器>带参数装饰器  传参，装饰器工厂 */
+function logclass(params) {
+    return function (target) {
+        //这个target就是当前的类
+        console.log("params:", params); //jie
+        console.log("target:", target);
+        //可以在target原型上面添加属性
+        target.prototype.apiurl = params;
+    };
+}
+var HttpClient = /** @class */ (function () {
+    function HttpClient() {
+    }
+    HttpClient.prototype.getData = function () { };
+    HttpClient = __decorate([
+        logclass("jie")
+    ], HttpClient);
+    return HttpClient;
+}());
+var newhttp = new HttpClient();
+console.log("newhttp-newhttp-newhttp:", newhttp);
+//类装饰器表达式会在运行时当做函数被调用，使用类装饰器重载构造函数
+function logclass1(target) {
+    console.log(target);
+    return /** @class */ (function (_super) {
+        __extends(class_1, _super);
+        function class_1() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.api = "装饰器中的api";
+            return _this;
+        }
+        class_1.prototype.getApi = function () {
+            console.log("装饰器中的getApi>this.api:", this.api);
+        };
+        return class_1;
+    }(target));
+}
+var Htti = /** @class */ (function () {
+    function Htti() {
+        this.api = "类里面constructor里的api";
+    }
+    Htti.prototype.getApi = function () {
+        this.api = this.api + "-----";
+        console.log("类里面的getApi>this.api:", this.api);
+    };
+    Htti = __decorate([
+        logclass1
+    ], Htti);
+    return Htti;
+}());
+var htti = new Htti();
+console.log("htti.getApi()", htti.getApi());
+console.log("htti.api", htti.api);
+/*2：属性装饰器
+静态成员：类的构造函数    实例成员：类的原型对象
+成员的名字
+//属性装饰器多用在属性依赖注入
+*/
+function log11(param) {
+    console.log("log11中的param:", param);
+}
+function log11p(value) {
+    return function (target, propertyKey) {
+        target[propertyKey] = value;
+    };
+}
+var Hy = /** @class */ (function () {
+    function Hy() {
+        //this.ahy = "ahy"
+    }
+    Hy.prototype.getAhy = function () {
+        console.log("this.ahy:", this.ahy);
+    };
+    __decorate([
+        log11p("ahy1111")
+    ], Hy.prototype, "ahy");
+    Hy = __decorate([
+        log11
+    ], Hy);
+    return Hy;
+}());
+var hy = new Hy();
+console.log("hy.ahy:", hy.ahy);
+/*3：方法装饰器》3个参数
+静态成员：类的构造函数    实例成员：类的原型对象
+方法名称
+方法的属性描述符
+*/
+function logMethod(param) {
+    return function (target, propertyKey, desc) {
+        console.log("target:", target, "propertyKey:", propertyKey, "desc:", desc); //desc输出为undefined
+    };
+}
+var Met = /** @class */ (function () {
+    function Met() {
+        //this.met = "类里面的met";
+    }
+    Met.prototype.getMet = function () {
+        console.log("类里面的getMet方法>this.met:", this.met);
+    };
+    __decorate([
+        logMethod("hihihi")
+    ], Met.prototype, "getMet");
+    return Met;
+}());
+//let met = new Met();
+// function hack(
+//   target: any,
+//   propertyKey: string,
+//   descriptor: PropertyDescriptor
+// ) {
+//   console.log(
+//     "target:",
+//     target,
+//     "propertyKey:",
+//     propertyKey,
+//     "descriptor:",
+//     descriptor
+//   );
+//   const oldFunction = target[propertyKey]; // 获取方法引用
+//   const newFunction = function (...args: any[]) {
+//     console.log("call function ", propertyKey);
+//     oldFunction.call(target, ...args);
+//   };
+//   descriptor.value = newFunction; // 替换原声明
+// }
+// class Demo {
+//   @hack
+//   demo() {
+//     console.log("call demo");
+//   }
+// }
+//const demo = new Demo();
+//demo.demo();
+//
+function isObject(val) {
+    return val !== null && typeof val === "object";
+}
+console.log("isObject>>", isObject("99999"));

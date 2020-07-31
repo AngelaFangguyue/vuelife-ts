@@ -7,8 +7,13 @@
   </head>
   <body>
     <div id="app">
-      <h3>单组件</h3>
-      <button @click="dataVar += 1">更新 {{dataVar}}</button>
+      <div>
+        <span class="test">{{egData}}</span>
+        <button @click="changeData">改变</button>
+      </div>
+      <div @click="add">{{count}}</div>
+      <h3>单组件--{{dataVar}}</h3>
+      <button @click="dataVaradd">更新 {{dataVar}}</button>
       <button @click="handleDestroy">销毁</button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -18,22 +23,34 @@
         data() {
           return {
             dataVar: 1,
+            count: 10,
+            egData: "old Message",
           };
         },
         beforeCreate() {
           this.compName = "single";
           console.log(`--${this.compName}--beforeCreate`);
+          console.log(`--${this.egData}--beforeCreate`);
+          console.log(`--${this.add}--beforeCreate`);
         },
         created() {
           console.log(`--${this.compName}--created`);
+          console.log(`--${this.egData}--created`);
+          console.log(`--${this.add}--created`);
+          console.log(this.add);
+          this.add();
         },
         beforeMount() {
           console.log(`--${this.compName}--beforeMount`);
+          console.log(`--${this.egData}--beforeMount`);
+          console.log(`--${this.add}--beforeMount`);
         },
         mounted() {
           console.log(`--${this.compName}--mounted`);
-          console.log(`'this.$el'--${this.$el}--mounted`);
+          console.log(`--${this.egData}--mounted`);
           console.log(this.$el);
+          //console.log(this.data.egData);
+          console.log(`--${this.add}--mounted`);
         },
         beforeUpdate() {
           console.log(`--${this.compName}--beforeUpdate`);
@@ -48,8 +65,38 @@
           console.log(`--${this.compName}--destroyed`);
         },
         methods: {
+          changeData() {
+            this.egData +=  '1';
+            let a = document.querySelector(".test");
+            //console.log("aaaaaa:", a);
+            console.log(a.innerText, "----------nextTick之前-------------");
+            console.log(this.egData)
+            //console.log(a.innerHTML, "-----------------------");
+            //console.log(a.html(), "-----------------------");
+            //console.log(this.$el, "-----------------------");
+            this.$nextTick(function () {
+              console.log(a.innerText, "----------nextTick里面-------------");
+            });
+          },
           handleDestroy() {
-            this.$destroy();
+            this.$destroy();//完全销毁一个实例。清理它与其它实例的连接，解绑它的全部指令及事件监听器。
+          },
+          dataVaradd(){
+              this.dataVar += 100;
+              console.log("this.$nextTick之前的this.dataVar:", this.dataVar);
+          },
+          add() {
+            this.count += 10;
+            // 修改数据
+            console.log("this.$nextTick之前的this.count:", this.count);
+            //this.message = "changed";
+            // DOM 还没有更新
+            this.$nextTick(function () {
+              // DOM 现在更新了
+              // `this` 绑定到当前实例
+              //this.doSomethingElse()
+              console.log("this.$nextTick中的this.count:", this.count);
+            });
           },
         },
       });
